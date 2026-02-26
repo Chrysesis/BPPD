@@ -4,7 +4,8 @@ from pydantic import BaseModel
 import os
 # Tambahkan dotenv untuk keamanan API Key
 from dotenv import load_dotenv
-
+from datetime import datetime
+from zoneinfo import ZoneInfo
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
@@ -14,6 +15,10 @@ from langchain_core.output_parsers import StrOutputParser
 
 # Memuat variabel environment dari file .env
 load_dotenv()
+
+def get_waktu_sekarang():
+    tz = ZoneInfo("Asia/Jakarta")
+    return datetime.now(tz).strftime("%A, %d %B %Y | Pukul %H:%M WIB")
 
 app = FastAPI(title="API Virtual Assistant BPPD Kalbar")
 
@@ -61,7 +66,7 @@ Pertanyaan Pengguna: {question}
 Jawaban Virtual Assistant BPPD Kalbar:
 """
 PROMPT = PromptTemplate(
-    template=prompt_template, input_variables=["context", "question"]
+    template=prompt_template, input_variables=["context", "question"], partial_variables={"waktu_sekarang": get_waktu_sekarang}
 )
 
 def format_docs(docs):
