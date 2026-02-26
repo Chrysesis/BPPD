@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
-# Tambahkan dotenv untuk keamanan API Key
 from dotenv import load_dotenv
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -10,10 +9,9 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain_core.prompts import PromptTemplate
-from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
+from operator import itemgetter # TAMBAHAN: Untuk mengatur alur riwayat
 
-# Memuat variabel environment dari file .env
 load_dotenv()
 
 def get_waktu_sekarang():
@@ -30,22 +28,26 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# TAMBAHAN: Menerima 'riwayat' dari frontend
 class ChatRequest(BaseModel):
     pertanyaan: str
+    riwayat: str = "" 
 
 print("Memuat Knowledge Base BPPD...")
 embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 vector_db = Chroma(persist_directory="./bppd_db", embedding_function=embeddings)
-# Menambahkan pencarian berdasarkan similarity
 retriever = vector_db.as_retriever(search_type="similarity", search_kwargs={"k": 3})
 
-# Catatan: Gunakan gemini-1.5-flash jika gemini-3-flash-preview belum stabil
-llm = ChatGoogleGenerativeAI(model="gemini-3-flash-preview", temperature=0.1) 
+llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.1) 
 
-# PERBAIKAN PROMPT: Disesuaikan dengan tujuan proposal (Sopan & Formal)
+# TAMBAHAN: Memasukkan konteks {riwayat} ke dalam prompt
 prompt_template = """
 Anda adalah Virtual Assistant resmi untuk Badan Pengelola Perbatasan Daerah (BPPD) Provinsi Kalimantan Barat.
-Gunakan gaya bahasa yang sopan, formal, informatif, tidak kaku, dan sesuai dengan standar komunikasi instansi pemerintahan.
+Gunakan gaya bahasa yang sopan, formal, informatif, dan sesuai dengan standar komunikasi instansi pemerintahan.
+
+[INFO SISTEM]
+Waktu saat ini: {waktu_sekarang}
+(Jika pengguna menyapa, balaslah dengan salam yang sesuai dengan waktu di atas).
 
 Tugas Anda HANYA menjawab pertanyaan terkait 4 kategori ini berdasarkan konteks dokumen resmi yang diberikan:
 1. Informasi Lintas Batas (syarat dokumen, jam operasional PLBN Entikong, Aruk, Badau, aturan kendaraan).
@@ -54,26 +56,40 @@ Tugas Anda HANYA menjawab pertanyaan terkait 4 kategori ini berdasarkan konteks 
 4. Layanan Pengaduan (kontak resmi, alur pengaduan).
 
 Aturan Penting:
-- Jika informasi yang ditanyakan TIDAK ADA di dalam konteks di bawah ini, katakan dengan sopan bahwa Anda tidak memiliki informasi tersebut dan arahkan pengguna untuk menghubungi kontak resmi pengaduan BPPD Kalbar. 
-- Jangan pernah mengarang informasi (halusinasi).
-- Jawab secara terstruktur (gunakan bullet points jika perlu agar mudah dibaca).
+- Jika informasi TIDAK ADA di dalam konteks, katakan bahwa Anda tidak memiliki informasi tersebut.
+- Jangan mengarang informasi (halusinasi).
+- Jawab secara terstruktur.
+
+ATURAN FORMAT KONTAK:
+- Untuk Email, gunakan format: [email@domain.com](mailto:email@domain.com)
+- Untuk WhatsApp, ubah angka 0 di depan menjadi 62, hilangkan tanda strip (-), gunakan format: [0812-XXXX-XXXX](https://wa.me/62812XXXXXXXX)
+
+Riwayat Percakapan Sebelumnya:
+{riwayat}
 
 Konteks Dokumen:
 {context}
 
-Pertanyaan Pengguna: {question}
+Pertanyaan Pengguna Saat Ini: {question}
 
 Jawaban Virtual Assistant BPPD Kalbar:
 """
 PROMPT = PromptTemplate(
-    template=prompt_template, input_variables=["context", "question"], partial_variables={"waktu_sekarang": get_waktu_sekarang}
+    template=prompt_template, 
+    input_variables=["context", "question", "riwayat"], 
+    partial_variables={"waktu_sekarang": get_waktu_sekarang}
 )
 
 def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 
+# TAMBAHAN: Menyusun chain dengan itemgetter agar menerima riwayat
 qa_chain = (
-    {"context": retriever | format_docs, "question": RunnablePassthrough()}
+    {
+        "context": itemgetter("question") | retriever | format_docs, 
+        "question": itemgetter("question"),
+        "riwayat": itemgetter("riwayat")
+    }
     | PROMPT
     | llm
     | StrOutputParser()
@@ -81,11 +97,12 @@ qa_chain = (
 
 @app.post("/api/chat")
 async def chat_endpoint(request: ChatRequest):
-    user_query = request.pertanyaan
-    
     try:
-        jawaban_ai = qa_chain.invoke(user_query)
+        jawaban_ai = qa_chain.invoke({
+            "question": request.pertanyaan,
+            "riwayat": request.riwayat
+        })
         return {"jawaban": jawaban_ai}
     
     except Exception as e:
-        return {"jawaban": f"Mohon maaf, saat ini layanan sedang mengalami gangguan. Silakan coba beberapa saat lagi. (Error: {str(e)})"}
+        return {"jawaban": f"Mohon maaf, saat ini layanan sedang mengalami gangguan. (Error: {str(e)})"}
