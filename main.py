@@ -38,7 +38,7 @@ embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-
 vector_db = Chroma(persist_directory="./bppd_db", embedding_function=embeddings)
 retriever = vector_db.as_retriever(search_type="similarity", search_kwargs={"k": 3})
 
-llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.1) 
+llm = ChatGoogleGenerativeAI(model="gemini-3-flash-preview", temperature=0.1) 
 
 # TAMBAHAN: Memasukkan konteks {riwayat} ke dalam prompt
 prompt_template = """
