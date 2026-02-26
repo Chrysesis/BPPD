@@ -8,25 +8,30 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     
     <style>
-        /* RESET & BASE - Kunci layar agar tidak bisa scroll luar */
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: #f4f7f6; 
-            margin: 0; 
-            padding: 0; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100dvh; /* PENTING: Menggunakan Dynamic Viewport Height untuk HP */
-            width: 100vw;
-            overflow: hidden; /* Mengunci halaman utama agar tidak bisa discroll */
+        /* PERBAIKAN: Jurus Kunci Mati Layar untuk HP */
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Mencegah layar utama bisa ditarik/discroll */
+            position: fixed; /* Kunci absolut agar tidak terpotong navigation bar HP */
+            background-color: #f4f7f6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
+        /* Mendorong container ke tengah untuk tampilan PC/Laptop */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
         /* CONTAINER UTAMA */
         .chat-container { 
             width: 100%; 
             max-width: 600px; 
-            height: 100%; /* Mengikuti tinggi body (100dvh) */
+            height: 100%; /* Otomatis mengisi 100% layar yang tersisa */
             background: white; 
             display: flex; 
             flex-direction: column; 
@@ -35,6 +40,7 @@
 
         /* KHUSUS UNTUK LAPTOP/PC */
         @media (min-width: 601px) {
+            html, body { position: relative; } /* Lepas kunci fixed kalau di laptop */
             body { padding: 20px; box-sizing: border-box; }
             .chat-container { 
                 height: 85vh; 
@@ -45,28 +51,10 @@
         }
 
         /* HEADER FIXED */
-        .header { 
-            background-color: #0056b3; 
-            color: white; 
-            padding: 15px; 
-            text-align: center; 
-            font-weight: bold; 
-            font-size: 1.2em; 
-            border-bottom: 3px solid #003d82; 
-            flex-shrink: 0; /* Mencegah header mengecil */
-            z-index: 10;
-        }
+        .header { background-color: #0056b3; color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 1.2em; border-bottom: 3px solid #003d82; flex-shrink: 0; z-index: 10; }
         
-        /* AREA CHAT (Satu-satunya yang bisa discroll) */
-        #chat-box { 
-            flex-grow: 1; /* Mengisi seluruh sisa ruang di tengah */
-            padding: 20px; 
-            overflow-y: auto; /* Mengaktifkan scroll HANYA di bagian pesan */
-            background-color: #fafafa; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 15px; 
-        }
+        /* AREA CHAT */
+        #chat-box { flex-grow: 1; padding: 20px; overflow-y: auto; background-color: #fafafa; display: flex; flex-direction: column; gap: 15px; }
         
         .msg-bubble { padding: 12px 16px; border-radius: 15px; line-height: 1.5; font-size: 0.95em; word-wrap: break-word; }
         .msg-bubble a { color: #0056b3; text-decoration: underline; font-weight: bold; }
@@ -89,32 +77,13 @@
         @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
         
         /* TOMBOL CEPAT FIXED */
-        .quick-replies { 
-            display: flex; 
-            gap: 8px; 
-            padding: 10px 15px; 
-            background: white; 
-            overflow-x: auto; 
-            white-space: nowrap; 
-            border-top: 1px solid #eee; 
-            flex-shrink: 0; /* Mengunci agar tidak ikut ter-scroll */
-            scrollbar-width: none; 
-            -ms-overflow-style: none; 
-        }
+        .quick-replies { display: flex; gap: 8px; padding: 10px 15px; background: white; overflow-x: auto; white-space: nowrap; border-top: 1px solid #eee; flex-shrink: 0; scrollbar-width: none; -ms-overflow-style: none; }
         .quick-replies::-webkit-scrollbar { display: none; }
         .quick-replies button { background-color: #f8f9fa; color: #0056b3; font-size: 0.85em; padding: 8px 14px; border-radius: 20px; border: 1px solid #0056b3; cursor: pointer; transition: all 0.2s; white-space: nowrap;}
         .quick-replies button:hover { background-color: #0056b3; color: white; }
         
         /* AREA INPUT FIXED */
-        .input-area { 
-            display: flex; 
-            padding: 12px 15px; 
-            background: white; 
-            border-top: 1px solid #ddd; 
-            align-items: center; 
-            flex-shrink: 0; /* Mengunci agar menempel di bawah */
-            padding-bottom: max(12px, env(safe-area-inset-bottom)); /* Support jarak aman di iPhone */
-        }
+        .input-area { display: flex; padding: 12px 15px; background: white; border-top: 1px solid #ddd; align-items: center; flex-shrink: 0; padding-bottom: max(12px, env(safe-area-inset-bottom)); }
         #user-input { flex-grow: 1; padding: 12px 15px; border-radius: 25px; border: 1px solid #ccc; outline: none; transition: border 0.3s; font-size: 16px; }
         #user-input:focus { border-color: #0056b3; }
         .btn-send { background-color: #0056b3; color: white; border: none; padding: 12px 20px; margin-left: 10px; border-radius: 25px; cursor: pointer; font-weight: bold; transition: background 0.3s; }
@@ -196,7 +165,7 @@
 
                 recognition.start();
             } else {
-                alert("Maaf, browser Anda tidak mendukung fitur suara. Gunakan Google Chrome atau Edge terbaru.");
+                alert("Maaf, browser Anda tidak mendukung fitur suara.");
             }
         }
 
@@ -219,7 +188,6 @@
                     </div>
                 </div>`;
             
-            // Scroll otomatis ke paling bawah chat box
             chatBox.scrollTop = chatBox.scrollHeight;
 
             try {
@@ -244,7 +212,6 @@
                         </div>
                     </div>`;
                 
-                // Scroll otomatis lagi setelah bot menjawab
                 chatBox.scrollTop = chatBox.scrollHeight;
 
                 riwayatPercakapan += `Pengguna: ${pesan}\nAsisten: ${data.jawaban}\n\n`;
