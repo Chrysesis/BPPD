@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Layanan Informasi Lintas Batas BPPD Prov. Kalbar</title>
+    <title>Layanan Informasi BPPD Prov. Kalbar</title>
     
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     
@@ -13,8 +13,8 @@
         body { display: flex; justify-content: center; align-items: center; }
         .chat-container { width: 100%; max-width: 600px; height: 100%; background: white; display: flex; flex-direction: column; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         
-        /* Mengubah warna background header menjadi biru pucat */
-        .header { background-color: rgba(162, 204, 231, 1); color: #333; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 1.2em; border-bottom: 3px solid #003d82; flex-shrink: 0; z-index: 10; }
+        /* WARNA BARU: Background biru cerah yang tegas, border bawah navy pekat dan lebih tebal */
+        .header { background-color: #85C1E9; color: #333; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 1.2em; border-bottom: 4px solid #003366; flex-shrink: 0; z-index: 10; }
         
         .header-spacer { width: 24px; }
         .btn-reset { background: none; border: none; color: #333; font-size: 1.2em; cursor: pointer; transition: transform 0.2s; padding: 0; }
@@ -35,19 +35,19 @@
         .quick-replies { display: flex; gap: 8px; padding: 10px 15px; background: white; overflow-x: auto; white-space: nowrap; border-top: 1px solid #eee; flex-shrink: 0; scrollbar-width: none; -ms-overflow-style: none; }
         .quick-replies::-webkit-scrollbar { display: none; }
         
-        /* Mengubah warna border dan hover quick reply */
-        .quick-replies button { background-color: #f8f9fa; color: #333; font-size: 0.85em; padding: 8px 14px; border-radius: 20px; border: 1px solid rgba(162, 204, 231, 1); cursor: pointer; transition: all 0.2s; white-space: nowrap; }
-        .quick-replies button:hover { background-color: rgba(162, 204, 231, 1); color: #333; }
+        /* Disesuaikan dengan warna biru header yang baru */
+        .quick-replies button { background-color: #f8f9fa; color: #333; font-size: 0.85em; padding: 8px 14px; border-radius: 20px; border: 1px solid #85C1E9; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+        .quick-replies button:hover { background-color: #85C1E9; color: #333; }
         
         .input-area { display: flex; padding: 12px 15px; background: white; border-top: 1px solid #ddd; align-items: center; flex-shrink: 0; padding-bottom: max(12px, env(safe-area-inset-bottom)); }
         
-        /* Mengubah warna border input saat fokus */
+        /* Border input senada saat fokus */
         #user-input { flex-grow: 1; padding: 12px 15px; border-radius: 25px; border: 1px solid #ccc; outline: none; transition: border 0.3s; font-size: 16px; width: 100%; }
-        #user-input:focus { border-color: rgba(162, 204, 231, 1); }
+        #user-input:focus { border-color: #85C1E9; }
         
-        /* Mengubah warna tombol kirim */
-        .btn-send { background-color: rgba(162, 204, 231, 1); color: #333; border: none; padding: 12px 20px; margin-left: 10px; border-radius: 25px; cursor: pointer; font-weight: bold; transition: background 0.3s; flex-shrink: 0; }
-        .btn-send:hover { background-color: rgba(142, 184, 211, 1); } /* Biru yang sedikit lebih gelap untuk efek hover */
+        /* Tombol kirim warna biru tegas */
+        .btn-send { background-color: #85C1E9; color: #333; border: none; padding: 12px 20px; margin-left: 10px; border-radius: 25px; cursor: pointer; font-weight: bold; transition: background 0.3s; flex-shrink: 0; }
+        .btn-send:hover { background-color: #5DADE2; } /* Efek hover sedikit lebih pekat */
         
         @media (min-width: 601px) {
             html, body { position: relative; } body { padding: 20px; }
@@ -61,28 +61,28 @@
     <div class="chat-container">
         <div class="header">
             <div class="header-spacer"></div>
-            <span>VA Lintas Batas BPPD</span>
+            <span>Asisten Virtual BPPD</span>
             <button class="btn-reset" onclick="hapusObrolan()" title="Mulai Obrolan Baru">🗑️</button>
         </div>
         
         <div id="chat-box">
             <div class="ai-wrapper">
-                <img src="https://api.dicebear.com/7.x/bottts/svg?seed=PLBN&backgroundColor=0056b3" class="bot-avatar" alt="Bot">
+                <img src="https://api.dicebear.com/7.x/bottts/svg?seed=BPPD&backgroundColor=0056b3" class="bot-avatar" alt="Bot">
                 <div class="msg-bubble ai-msg">
-                    <b>Asisten Lintas Batas:</b><br>Selamat datang di layanan informasi Lintas Batas Badan Pengelola Perbatasan Daerah (BPPD) Provinsi Kalimantan Barat. Ada pertanyaan terkait prosedur dan syarat melintas di PLBN yang bisa saya bantu?
+                    <b>Asisten BPPD:</b><br>Selamat datang di layanan informasi Badan Pengelola Perbatasan Daerah (BPPD) Provinsi Kalimantan Barat. Ada pertanyaan terkait profil instansi, tugas dan fungsi, atau layanan PPID yang bisa saya bantu hari ini?
                 </div>
             </div>
         </div>
         
         <div class="quick-replies">
-            <button onclick="setPertanyaan('Apa saja dokumen wajib untuk lintas batas?')">Syarat Lintas Batas</button>
-            <button onclick="setPertanyaan('Jam berapa operasional PLBN?')">Jam Operasional PLBN</button>
-            <button onclick="setPertanyaan('Bagaimana cara dapat kartu visitor PLBN?')">Info Kartu Visitor</button>
-            <button onclick="setPertanyaan('Apakah butuh dokumen kepabeanan?')">Info Kepabeanan</button>
+            <button onclick="setPertanyaan('Apa saja tugas pokok dan fungsi (Tupoksi) BPPD?')">Tugas & Fungsi BPPD</button>
+            <button onclick="setPertanyaan('Bagaimana prosedur permohonan informasi PPID?')">Layanan Informasi PPID</button>
+            <button onclick="setPertanyaan('Apa visi dan misi dari BPPD Kalbar?')">Visi & Misi Instansi</button>
+            <button onclick="setPertanyaan('Di mana saja lokasi PLBN di Kalimantan Barat?')">Lokasi PLBN</button>
         </div>
 
         <div class="input-area">
-            <input type="text" id="user-input" placeholder="Ketik pertanyaan lintas batas..." onkeypress="handleEnter(event)">
+            <input type="text" id="user-input" placeholder="Ketik pertanyaan seputar BPPD atau PPID..." onkeypress="handleEnter(event)">
             <button class="btn-send" onclick="kirimPesan()">Kirim</button>
         </div>
     </div>
@@ -94,9 +94,9 @@
             riwayatPercakapan = "";
             document.getElementById("chat-box").innerHTML = `
                 <div class="ai-wrapper">
-                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=PLBN&backgroundColor=0056b3" class="bot-avatar" alt="Bot">
+                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=BPPD&backgroundColor=0056b3" class="bot-avatar" alt="Bot">
                     <div class="msg-bubble ai-msg">
-                        <b>Asisten Lintas Batas:</b><br>Memori obrolan telah dibersihkan. Mari mulai topik yang baru!
+                        <b>Asisten BPPD:</b><br>Memori obrolan telah dibersihkan. Mari mulai topik yang baru!
                     </div>
                 </div>`;
         }
@@ -123,7 +123,7 @@
             const loadingId = "loading-" + Date.now();
             chatBox.innerHTML += `
                 <div id="${loadingId}" class="ai-wrapper">
-                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=PLBN&backgroundColor=0056b3" class="bot-avatar" alt="Bot">
+                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=BPPD&backgroundColor=0056b3" class="bot-avatar" alt="Bot">
                     <div class="msg-bubble ai-msg">
                         <div class="typing-indicator">Mencari data <span></span><span></span><span></span></div>
                     </div>
@@ -132,6 +132,7 @@
             chatBox.scrollTop = chatBox.scrollHeight;
 
             try {
+                // PASTIKAN FETCH INI MENUJU KE HUGGING FACE ATAU API KAMU
                 const response = await fetch("http://127.0.0.1:8000/api/chat", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -147,9 +148,9 @@
                 const formattedAnswer = marked.parse(data.jawaban);
                 chatBox.innerHTML += `
                     <div class="ai-wrapper">
-                        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=PLBN&backgroundColor=0056b3" class="bot-avatar" alt="Bot">
+                        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=BPPD&backgroundColor=0056b3" class="bot-avatar" alt="Bot">
                         <div class="msg-bubble ai-msg">
-                            <b>Asisten Lintas Batas:</b><br>${formattedAnswer}
+                            <b>Asisten BPPD:</b><br>${formattedAnswer}
                         </div>
                     </div>`;
                 
@@ -164,7 +165,7 @@
                 document.getElementById(loadingId).remove();
                 chatBox.innerHTML += `
                     <div class="ai-wrapper">
-                        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=PLBN&backgroundColor=0056b3" class="bot-avatar" alt="Bot">
+                        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=BPPD&backgroundColor=0056b3" class="bot-avatar" alt="Bot">
                         <div class="msg-bubble ai-msg" style="color: red;">
                             <b>Sistem:</b><br>Gagal terhubung ke Server.
                         </div>
