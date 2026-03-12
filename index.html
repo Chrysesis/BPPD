@@ -157,7 +157,7 @@
 
             try {
                 // PASTIKAN FETCH INI MENUJU KE HUGGING FACE ATAU API KAMU
-                const response = await fetch("https://chrysesis-bppd-va.hf.space", {
+                const response = await fetch("https://chrysesis-bppd-va.hf.space/api/chat", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ 
